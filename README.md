@@ -2,7 +2,7 @@
 
 Recognises which font a single glyph image is written in. The pipeline renders 8,600 Google Fonts styles into 64×64 glyph images, trains a ResNet embedding model with an ArcFace loss on Google Colab, and reports how often the correct font is in the model's top 10 and top 5 predictions.
 
-![Pipeline overview](docs/pipeline.png)
+![Pipeline overview]( pipeline.png)
 
 ## Contents
 
@@ -27,7 +27,7 @@ Recognises which font a single glyph image is written in. The pipeline renders 8
 | `train_colab.ipynb` | Trains the model one batch of shards at a time, builds the font index, predicts single images | Google Colab (GPU) |
 | `predict_colab.ipynb` | Predicts the top 10 fonts for every validation image and writes the top-10 / top-5 accuracy, precision, recall and F1 reports | Google Colab (GPU) |
 | `train.py` | Command-line version of the trainer for a local GPU/CPU | Local PC |
-| `docs/` | Architecture diagrams (`.svg` + `.png`) | — |
+| ` ` | Architecture diagrams (`.svg` + `.png`) | — |
 | `google-fonts/` | Clone of [google/fonts](https://github.com/google/fonts), created by `generate_dataset.py` | — |
 | `fontdata/` | Generated dataset (train / val / ref shards, `fonts.csv`, `chars.json`) | — |
 | `fontdata_val_clean/` | Validation shards rendered without effects (`--clean-val`) | — |
@@ -208,7 +208,7 @@ Upload `fonts.csv`, `chars.json`, all `val-p*.npz` and all `ref-p*.npz` once. Tr
 
 ### Model
 
-![Model architecture](docs/model_architecture.png)
+![Model architecture]( model_architecture.png)
 
 - **FontEncoder** (11.4 M parameters) is a small ResNet. The 64×64 glyph passes through a two-convolution stem and four stages of two residual blocks each (64 → 128 → 256 → 512 channels, down to 4×4). Global average and max pooling are concatenated (1,024 values). A linear layer with BatchNorm projects that to a 256-number embedding, which is L2-normalised.
 - **ArcFace head** (2.2 M parameters) holds one 256-number weight row per font style. The cosine between the embedding and each row is the font's score. During training, an angular margin of 0.25 is added to the true font's angle and the scores are multiplied by 30 before cross-entropy (label smoothing 0.05). This pulls the glyphs of one font into a tight cluster and pushes different fonts apart.
@@ -216,7 +216,7 @@ Upload `fonts.csv`, `chars.json`, all `val-p*.npz` and all `ref-p*.npz` once. Tr
 
 ### Training loop (`train_batch`)
 
-![Training loop](docs/training_loop.png)
+![Training loop]( training_loop.png)
 
 1. **Resume.** Loads `progress.json` and starts from `last.pt`, which holds the best weights of the previous batch. If `fonts.csv` gained fonts, the ArcFace head gets new rows. An interrupted batch continues from its last saved step.
 2. **Learning rate.** The first batch starts at 2e-3 with a 5% warm-up; later batches start at 1e-3 with a 2% warm-up, to forget less. The LR follows a cosine curve down to 1% over `max_epochs` and is multiplied by 0.3 after each LR cut.
